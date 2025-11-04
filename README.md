@@ -2,8 +2,6 @@ PNChat is a peer-to-peer local network chat application that allows users to dis
 
 <img width="733" height="500" alt="image" src="https://github.com/user-attachments/assets/36079a46-9121-4175-8b9c-f0c09360fe8a" />
 
-Peer-to-Peer network chat application: The program allows you to automatically discover other users within a local network.
-
 Simple login with PIN code: A PIN code is used for user identification, which is securely stored using a hash.
 
 Use of unique identifier and username: Each client has a local IP-based software identifier and a configurable, unique username.
