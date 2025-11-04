@@ -4,6 +4,8 @@ using System.IO;
 using System.Media;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,13 +29,15 @@ namespace PNChat
             public string Name { get; set; }
             public string Id { get; set; }
             public string Ip { get; set; }
+            public string ActiveWindowTitle { get; set; }
             public DateTime LastSeen { get; set; }
 
-            public PeerInfo(string name, string id, string ip)
+            public PeerInfo(string name, string id, string ip, string activeWindowTitle)
             {
                 Name = name;
                 Id = id;
                 Ip = ip;
+                ActiveWindowTitle = activeWindowTitle;
                 LastSeen = DateTime.Now;
             }
         }
@@ -49,7 +53,6 @@ namespace PNChat
             InitializeComponent();
             LoadOrCreateConfig();
 
-            // Ikon bet�lt�se a futtat�si k�nyvt�rb�l, pl. "app.ico"
             try
             {
                 var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
@@ -63,28 +66,27 @@ namespace PNChat
                 MessageBox.Show($"Icon loading failed: {ex.Message}");
             }
 
-            // Tov�bbi inicializ�l�sok...
-
             discovery = new PeerDiscovery();
             server = new ChatServer(12456);
             client = new ChatClient(12456);
 
-            discovery.PeerFound += (msg, ip) => OnPeerFound(msg, ip);
+            discovery.PeerFound += async (msg, ip) => await OnPeerFound(msg, ip);
             server.MessageReceived += OnMessageReceived;
 
             lblSoftwareId.Text = $"Software ID: {softwareId}";
             Text = $"Private Network Chat v0.6 | zdnsk";
 
             if (!string.IsNullOrEmpty(softwareId) && !string.IsNullOrEmpty(userName))
-                discovery.Start($"{userName}|{softwareId}");
+                discovery.Start($"{userName}|{softwareId}|{GetActiveWindowTitle()}");
 
             discoveryTimer = new System.Windows.Forms.Timer { Interval = 10000 };
-            discoveryTimer.Tick += async (s, e) =>
+            discoveryTimer.Tick += (s, e) =>
             {
                 if (!string.IsNullOrEmpty(softwareId) && !string.IsNullOrEmpty(userName))
-                    discovery.Start($"{userName}|{softwareId}");
+                    discovery.Start($"{userName}|{softwareId}|{GetActiveWindowTitle()}");
                 CleanUpPeers();
                 RefreshPeerListBox();
+                RefreshActiveWindowListBox();
             };
             discoveryTimer.Start();
 
@@ -92,70 +94,135 @@ namespace PNChat
 
             SetLoggedInState(false);
 
-            this.FormClosing += async (sender, e) =>
+            FormClosing += async (sender, e) =>
             {
-                if (isLoggedIn)
-                {
-                    await SendLogoutMessage();
-                }
+                if (isLoggedIn) await SendLogoutMessage();
             };
         }
 
-        private Task OnPeerFound(string rawIdName, string ip)
+        private async Task OnPeerFound(string rawData, string ip)
         {
-            var parts = rawIdName.Split('|', StringSplitOptions.RemoveEmptyEntries);
-            string name = parts.Length > 1 ? parts[0] : "??";
-            string id = parts.Length > 1 ? parts[1] : rawIdName;
+            var parts = rawData.Split('|');
+            if (parts.Length < 3) return;
+
+            string name = parts[0];
+            string id = parts[1];
+            string activeWindowTitle = parts[2];
 
             if (peers.ContainsKey(id))
             {
-                peers[id].LastSeen = DateTime.Now;
-                peers[id].Ip = ip;
-                peers[id].Name = name;
+                var peer = peers[id];
+                peer.LastSeen = DateTime.Now;
+                peer.Ip = ip;
+                peer.Name = name;
+                peer.ActiveWindowTitle = activeWindowTitle;
             }
             else
             {
-                peers[id] = new PeerInfo(name, id, ip);
+                peers[id] = new PeerInfo(name, id, ip, activeWindowTitle);
             }
-
             RefreshPeerListBox();
-            return Task.CompletedTask;
+            RefreshActiveWindowListBox();
+            await Task.CompletedTask;
         }
 
         private void RefreshPeerListBox()
         {
-            peerListBox.Invoke((Action)(() =>
+            if (peerListBox.InvokeRequired)
             {
-                // Meg�rizz�k a kiv�lasztott elem ID-j�t
-                string? selectedId = null;
-                if (peerListBox.SelectedItem != null)
-                {
-                    var parts = peerListBox.SelectedItem.ToString()?.Split(new[] { " - " }, StringSplitOptions.None);
-                    if (parts != null && parts.Length >= 2)
-                        selectedId = parts[1];
-                }
+                peerListBox.Invoke(new Action(RefreshPeerListBox));
+                return;
+            }
 
-                peerListBox.Items.Clear();
-                int toSelectIndex = -1;
-                int index = 0;
+            // Előzőleg kiválasztott peer Id eltárolása
+            string? selectedId = null;
+            if (peerListBox.SelectedItem != null)
+            {
+                var parts = peerListBox.SelectedItem.ToString()?.Split(new[] { " - " }, StringSplitOptions.None);
+                if (parts != null && parts.Length >= 2)
+                    selectedId = parts[1];
+            }
 
-                foreach (var p in peers.Values)
-                {
-                    string item = $"{p.Name} - {p.Id} - {p.Ip}";
-                    peerListBox.Items.Add(item);
-                    if (selectedId != null && p.Id == selectedId)
-                    {
-                        toSelectIndex = index;
-                    }
-                    index++;
-                }
+            peerListBox.Items.Clear();
+            int toSelectIndex = -1;
+            int index = 0;
 
-                // Vissza�ll�tjuk a kiv�lasztott elemet (ha m�g benne van)
-                if (toSelectIndex >= 0 && toSelectIndex < peerListBox.Items.Count)
+            // Lista feltöltése, és azonosító keresése index alapján
+            foreach (var p in peers.Values)
+            {
+                string item = $"{p.Name} - {p.Id} - {p.Ip}";
+                peerListBox.Items.Add(item);
+                if (selectedId != null && p.Id == selectedId)
                 {
-                    peerListBox.SelectedIndex = toSelectIndex;
+                    toSelectIndex = index;
                 }
-            }));
+                index++;
+            }
+
+            // Kiválasztás visszaállítása
+            if (toSelectIndex >= 0 && toSelectIndex < peerListBox.Items.Count)
+            {
+                peerListBox.SelectedIndex = toSelectIndex;
+            }
+        }
+
+
+        private void RefreshActiveWindowListBox()
+        {
+            if (activeWindowsListBox.InvokeRequired)
+            {
+                activeWindowsListBox.Invoke(new Action(RefreshActiveWindowListBox));
+                return;
+            }
+            activeWindowsListBox.Items.Clear();
+            foreach (var peer in peers.Values)
+                activeWindowsListBox.Items.Add(WrapText(peer.ActiveWindowTitle, 40));
+        }
+
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+
+        private string GetActiveWindowTitle()
+        {
+            const int nChars = 256;
+            StringBuilder Buff = new StringBuilder(nChars);
+            IntPtr handle = GetForegroundWindow();
+
+            if (GetWindowText(handle, Buff, nChars) > 0)
+            {
+                return Buff.ToString();
+            }
+            return string.Empty;
+        }
+
+        private string WrapText(string text, int maxLineLength)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "";
+
+            var words = text.Split(' ');
+            var lines = new List<string>();
+            var currentLine = new StringBuilder();
+
+            foreach (var word in words)
+            {
+                if (currentLine.Length + word.Length + 1 > maxLineLength)
+                {
+                    lines.Add(currentLine.ToString());
+                    currentLine.Clear();
+                }
+                if (currentLine.Length > 0)
+                    currentLine.Append(' ');
+                currentLine.Append(word);
+            }
+            if (currentLine.Length > 0)
+                lines.Add(currentLine.ToString());
+
+            return string.Join(Environment.NewLine, lines);
         }
 
         private void LoadOrCreateConfig()
@@ -180,7 +247,7 @@ namespace PNChat
                     var props = ni.GetIPProperties();
                     foreach (var addr in props.UnicastAddresses)
                     {
-                        if (addr.Address.AddressFamily == AddressFamily.InterNetwork
+                        if (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
                             && !IPAddress.IsLoopback(addr.Address))
                         {
                             var segments = addr.Address.ToString().Split('.');
@@ -219,7 +286,7 @@ namespace PNChat
         private string Hash(string input)
         {
             using var sha = System.Security.Cryptography.SHA256.Create();
-            return Convert.ToBase64String(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input)));
+            return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(input)));
         }
 
         private bool ValidatePin(string pin)
@@ -278,7 +345,7 @@ namespace PNChat
             }
             peers = alivePeers;
             if (!string.IsNullOrEmpty(softwareId) && !string.IsNullOrEmpty(userName))
-                discovery.Start($"{userName}|{softwareId}");
+                discovery.Start($"{userName}|{softwareId}|{GetActiveWindowTitle()}");
             RefreshPeerListBox();
         }
 
@@ -369,7 +436,7 @@ namespace PNChat
                 }
                 catch
                 {
-                    // hibakezel�s
+                    // hibakezelés
                 }
             }
         }
@@ -479,14 +546,18 @@ namespace PNChat
         {
             chatRichTextBox.Invoke((Action)(() =>
             {
-                int start = chatRichTextBox.TextLength;
+                // szöveg törlése
+                var previousText = chatRichTextBox.Text;
+                chatRichTextBox.Clear();
+                // az új üzenet hozzáfűzése, ez kerüljön felülre
                 chatRichTextBox.AppendText(msg + Environment.NewLine);
-                int end = chatRichTextBox.TextLength;
-                chatRichTextBox.Select(start, end - start);
-                chatRichTextBox.SelectionBackColor = isSent ? System.Drawing.Color.LightGray : System.Drawing.Color.White;
-                chatRichTextBox.SelectionLength = 0;
+                // majd hozzáadjuk a régieket
+                chatRichTextBox.AppendText(previousText);
+                // színezés és görgetés
+                chatRichTextBox.Select(0, chatRichTextBox.TextLength);
                 chatRichTextBox.ScrollToCaret();
             }));
         }
+
     }
 }
