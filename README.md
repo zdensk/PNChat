@@ -1,4 +1,4 @@
-
+<img width="733" height="500" alt="image" src="https://github.com/user-attachments/assets/36079a46-9121-4175-8b9c-f0c09360fe8a" />
 
 Peer-to-Peer network chat application: The program allows you to automatically discover other users within a local network.
 
