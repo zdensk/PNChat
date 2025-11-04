@@ -74,7 +74,7 @@ namespace PNChat
             server.MessageReceived += OnMessageReceived;
 
             lblSoftwareId.Text = $"Software ID: {softwareId}";
-            Text = $"Private Network Chat v0.6 | zdnsk";
+            Text = $"Private Network Chat v0.7 | zdnsk";
 
             if (!string.IsNullOrEmpty(softwareId) && !string.IsNullOrEmpty(userName))
                 discovery.Start($"{userName}|{softwareId}|{GetActiveWindowTitle()}");
@@ -546,18 +546,16 @@ namespace PNChat
         {
             chatRichTextBox.Invoke((Action)(() =>
             {
-                // szöveg törlése
-                var previousText = chatRichTextBox.Text;
-                chatRichTextBox.Clear();
-                // az új üzenet hozzáfűzése, ez kerüljön felülre
+                int start = chatRichTextBox.TextLength;
                 chatRichTextBox.AppendText(msg + Environment.NewLine);
-                // majd hozzáadjuk a régieket
-                chatRichTextBox.AppendText(previousText);
-                // színezés és görgetés
-                chatRichTextBox.Select(0, chatRichTextBox.TextLength);
+                int end = chatRichTextBox.TextLength;
+                chatRichTextBox.Select(start, end - start);
+                chatRichTextBox.SelectionBackColor = isSent ? System.Drawing.Color.LightGray : System.Drawing.Color.White;
+                chatRichTextBox.SelectionLength = 0;
                 chatRichTextBox.ScrollToCaret();
             }));
         }
+
 
     }
 }
