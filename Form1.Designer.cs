@@ -1,4 +1,4 @@
-﻿namespace PNChat
+namespace PNChat
 {
     partial class Form1
     {
@@ -9,6 +9,7 @@
         private System.Windows.Forms.Button btnRefreshPeers;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.ListBox peerListBox;
+        private System.Windows.Forms.ListBox activeWindowsListBox; // Új listbox
         private System.Windows.Forms.RichTextBox chatRichTextBox;
         private System.Windows.Forms.TextBox txtNewPinBox;
         private System.Windows.Forms.TextBox txtUserName;
@@ -17,6 +18,7 @@
         private System.Windows.Forms.TextBox txtMessageBox;
         private System.Windows.Forms.Label lblSoftwareId;
         private System.Windows.Forms.Label lblPeers;
+        private System.Windows.Forms.Label lblActiveWindows; // Új címke
         private System.Windows.Forms.Label lblChat;
         private System.Windows.Forms.Label lblUserNameLabel;
         private System.Windows.Forms.Label lblNewPinLabel;
@@ -31,162 +33,225 @@
 
         private void InitializeComponent()
         {
-            this.txtPinBox = new System.Windows.Forms.TextBox();
-            this.btnLogin = new System.Windows.Forms.Button();
-            this.btnRefreshPeers = new System.Windows.Forms.Button();
-            this.peerListBox = new System.Windows.Forms.ListBox();
-            this.chatRichTextBox = new System.Windows.Forms.RichTextBox();
-            this.txtNewPinBox = new System.Windows.Forms.TextBox();
-            this.txtUserName = new System.Windows.Forms.TextBox();
-            this.btnSendMessage = new System.Windows.Forms.Button();
-            this.btnSaveSettings = new System.Windows.Forms.Button();
-            this.txtMessageBox = new System.Windows.Forms.TextBox();
-            this.lblSoftwareId = new System.Windows.Forms.Label();
-            this.lblPeers = new System.Windows.Forms.Label();
-            this.lblChat = new System.Windows.Forms.Label();
-            this.lblUserNameLabel = new System.Windows.Forms.Label();
-            this.lblNewPinLabel = new System.Windows.Forms.Label();
-            this.bottomPanel = new System.Windows.Forms.Panel();
-            this.btnExit = new System.Windows.Forms.Button();
-
+            txtPinBox = new TextBox();
+            btnLogin = new Button();
+            btnRefreshPeers = new Button();
+            peerListBox = new ListBox();
+            activeWindowsListBox = new ListBox();
+            chatRichTextBox = new RichTextBox();
+            txtNewPinBox = new TextBox();
+            txtUserName = new TextBox();
+            btnSendMessage = new Button();
+            btnSaveSettings = new Button();
+            txtMessageBox = new TextBox();
+            lblSoftwareId = new Label();
+            lblPeers = new Label();
+            lblActiveWindows = new Label();
+            lblChat = new Label();
+            lblUserNameLabel = new Label();
+            lblNewPinLabel = new Label();
+            bottomPanel = new Panel();
+            btnExit = new Button();
+            bottomPanel.SuspendLayout();
+            SuspendLayout();
+            // 
             // txtPinBox
-            this.txtPinBox.Location = new System.Drawing.Point(20, 20);
-            this.txtPinBox.MaxLength = 4;
-            this.txtPinBox.Name = "txtPinBox";
-            this.txtPinBox.Size = new System.Drawing.Size(100, 22);
-
+            // 
+            txtPinBox.Location = new Point(20, 40);
+            txtPinBox.MaxLength = 4;
+            txtPinBox.Name = "txtPinBox";
+            txtPinBox.Size = new Size(100, 23);
+            txtPinBox.TabIndex = 0;
+            // 
             // btnLogin
-            this.btnLogin.Location = new System.Drawing.Point(130, 18);
-            this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(100, 25);
-            this.btnLogin.Text = "Login";
-            this.btnLogin.UseVisualStyleBackColor = true;
-            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
-
+            // 
+            btnLogin.Location = new Point(130, 38);
+            btnLogin.Name = "btnLogin";
+            btnLogin.Size = new Size(100, 25);
+            btnLogin.TabIndex = 1;
+            btnLogin.Text = "Login";
+            btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
+            // 
             // btnRefreshPeers
-            this.btnRefreshPeers.Location = new System.Drawing.Point(20, 60);
-            this.btnRefreshPeers.Name = "btnRefreshPeers";
-            this.btnRefreshPeers.Size = new System.Drawing.Size(210, 25);
-            this.btnRefreshPeers.Text = "Refresh Peers";
-            this.btnRefreshPeers.UseVisualStyleBackColor = true;
-            this.btnRefreshPeers.Click += new System.EventHandler(this.btnRefreshPeers_Click);
-
+            // 
+            btnRefreshPeers.Location = new Point(20, 78);
+            btnRefreshPeers.Name = "btnRefreshPeers";
+            btnRefreshPeers.Size = new Size(210, 25);
+            btnRefreshPeers.TabIndex = 2;
+            btnRefreshPeers.Text = "Refresh Peers";
+            btnRefreshPeers.UseVisualStyleBackColor = true;
+            btnRefreshPeers.Click += btnRefreshPeers_Click;
+            // 
             // peerListBox
-            this.peerListBox.Location = new System.Drawing.Point(250, 40);
-            this.peerListBox.Name = "peerListBox";
-            this.peerListBox.Size = new System.Drawing.Size(250, 110);
-
+            // 
+            peerListBox.ItemHeight = 15;
+            peerListBox.Location = new Point(250, 40);
+            peerListBox.Name = "peerListBox";
+            peerListBox.Size = new Size(250, 109);
+            peerListBox.TabIndex = 3;
+            // 
+            // activeWindowsListBox
+            // 
+            activeWindowsListBox.ItemHeight = 15;
+            activeWindowsListBox.Location = new Point(520, 40);
+            activeWindowsListBox.Name = "activeWindowsListBox";
+            activeWindowsListBox.Size = new Size(433, 109);
+            activeWindowsListBox.TabIndex = 4;
+            // 
             // chatRichTextBox
-            this.chatRichTextBox.Location = new System.Drawing.Point(250, 180);
-            this.chatRichTextBox.Name = "chatRichTextBox";
-            this.chatRichTextBox.ReadOnly = true;
-            this.chatRichTextBox.Size = new System.Drawing.Size(400, 105);
-            this.chatRichTextBox.TabStop = false;
-
+            // 
+            chatRichTextBox.Location = new Point(250, 180);
+            chatRichTextBox.Name = "chatRichTextBox";
+            chatRichTextBox.ReadOnly = true;
+            chatRichTextBox.Size = new Size(703, 105);
+            chatRichTextBox.TabIndex = 5;
+            chatRichTextBox.TabStop = false;
+            chatRichTextBox.Text = "";
+            // 
             // txtNewPinBox
-            this.txtNewPinBox.Location = new System.Drawing.Point(20, 190);
-            this.txtNewPinBox.MaxLength = 4;
-            this.txtNewPinBox.Name = "txtNewPinBox";
-            this.txtNewPinBox.Size = new System.Drawing.Size(210, 22);
-            this.txtNewPinBox.Visible = false;
-
+            // 
+            txtNewPinBox.Location = new Point(20, 237);
+            txtNewPinBox.MaxLength = 4;
+            txtNewPinBox.Name = "txtNewPinBox";
+            txtNewPinBox.Size = new Size(210, 23);
+            txtNewPinBox.TabIndex = 6;
+            txtNewPinBox.Visible = false;
+            // 
             // txtUserName
-            this.txtUserName.Location = new System.Drawing.Point(20, 140);
-            this.txtUserName.Name = "txtUserName";
-            this.txtUserName.Size = new System.Drawing.Size(210, 22);
-            this.txtUserName.Visible = false;
-
+            // 
+            txtUserName.Location = new Point(20, 180);
+            txtUserName.Name = "txtUserName";
+            txtUserName.Size = new Size(210, 23);
+            txtUserName.TabIndex = 7;
+            txtUserName.Visible = false;
+            // 
             // btnSendMessage
-            this.btnSendMessage.Location = new System.Drawing.Point(560, 300);
-            this.btnSendMessage.Name = "btnSendMessage";
-            this.btnSendMessage.Size = new System.Drawing.Size(90, 25);
-            this.btnSendMessage.Text = "Send Message";
-            this.btnSendMessage.UseVisualStyleBackColor = true;
-            this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
-
+            // 
+            btnSendMessage.Location = new Point(863, 300);
+            btnSendMessage.Name = "btnSendMessage";
+            btnSendMessage.Size = new Size(90, 23);
+            btnSendMessage.TabIndex = 8;
+            btnSendMessage.Text = "Send Message";
+            btnSendMessage.UseVisualStyleBackColor = true;
+            btnSendMessage.Click += btnSendMessage_Click;
+            // 
             // btnSaveSettings
-            this.btnSaveSettings.Location = new System.Drawing.Point(20, 220);
-            this.btnSaveSettings.Name = "btnSaveSettings";
-            this.btnSaveSettings.Size = new System.Drawing.Size(210, 25);
-            this.btnSaveSettings.Text = "Save";
-            this.btnSaveSettings.UseVisualStyleBackColor = true;
-            this.btnSaveSettings.Visible = false;
-            this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
-
+            // 
+            btnSaveSettings.Location = new Point(20, 298);
+            btnSaveSettings.Name = "btnSaveSettings";
+            btnSaveSettings.Size = new Size(210, 25);
+            btnSaveSettings.TabIndex = 9;
+            btnSaveSettings.Text = "Save";
+            btnSaveSettings.UseVisualStyleBackColor = true;
+            btnSaveSettings.Visible = false;
+            btnSaveSettings.Click += btnSaveSettings_Click;
+            // 
             // txtMessageBox
-            this.txtMessageBox.Location = new System.Drawing.Point(250, 300);
-            this.txtMessageBox.Name = "txtMessageBox";
-            this.txtMessageBox.Size = new System.Drawing.Size(300, 22);
-
+            // 
+            txtMessageBox.Location = new Point(250, 300);
+            txtMessageBox.Name = "txtMessageBox";
+            txtMessageBox.Size = new Size(607, 23);
+            txtMessageBox.TabIndex = 10;
+            // 
             // lblSoftwareId
-            this.lblSoftwareId.AutoSize = true;
-            this.lblSoftwareId.Location = new System.Drawing.Point(10, 10);
-            this.lblSoftwareId.Name = "lblSoftwareId";
-
+            // 
+            lblSoftwareId.AutoSize = true;
+            lblSoftwareId.Location = new Point(10, 10);
+            lblSoftwareId.Name = "lblSoftwareId";
+            lblSoftwareId.Size = new Size(0, 15);
+            lblSoftwareId.TabIndex = 0;
+            // 
             // lblPeers
-            this.lblPeers.Location = new System.Drawing.Point(250, 20);
-            this.lblPeers.Name = "lblPeers";
-            this.lblPeers.Size = new System.Drawing.Size(250, 20);
-            this.lblPeers.Text = "Peers Found";
-
+            // 
+            lblPeers.Location = new Point(250, 20);
+            lblPeers.Name = "lblPeers";
+            lblPeers.Size = new Size(250, 20);
+            lblPeers.TabIndex = 13;
+            lblPeers.Text = "Peers Found";
+            // 
+            // lblActiveWindows
+            // 
+            lblActiveWindows.Location = new Point(520, 20);
+            lblActiveWindows.Name = "lblActiveWindows";
+            lblActiveWindows.Size = new Size(250, 20);
+            lblActiveWindows.TabIndex = 14;
+            lblActiveWindows.Text = "Active Windows";
+            // 
             // lblChat
-            this.lblChat.Location = new System.Drawing.Point(250, 160);
-            this.lblChat.Name = "lblChat";
-            this.lblChat.Size = new System.Drawing.Size(250, 20);
-            this.lblChat.Text = "Chat Messages";
-
+            // 
+            lblChat.Location = new Point(250, 160);
+            lblChat.Name = "lblChat";
+            lblChat.Size = new Size(250, 20);
+            lblChat.TabIndex = 15;
+            lblChat.Text = "Chat Messages";
+            // 
             // lblUserNameLabel
-            this.lblUserNameLabel.AutoSize = true;
-            this.lblUserNameLabel.Location = new System.Drawing.Point(20, 120);
-            this.lblUserNameLabel.Name = "lblUserNameLabel";
-            this.lblUserNameLabel.Size = new System.Drawing.Size(44, 16);
-            this.lblUserNameLabel.Text = "Name:";
-            this.lblUserNameLabel.Visible = false;
-
+            // 
+            lblUserNameLabel.AutoSize = true;
+            lblUserNameLabel.Location = new Point(20, 160);
+            lblUserNameLabel.Name = "lblUserNameLabel";
+            lblUserNameLabel.Size = new Size(42, 15);
+            lblUserNameLabel.TabIndex = 11;
+            lblUserNameLabel.Text = "Name:";
+            lblUserNameLabel.Visible = false;
+            // 
             // lblNewPinLabel
-            this.lblNewPinLabel.AutoSize = true;
-            this.lblNewPinLabel.Location = new System.Drawing.Point(20, 170);
-            this.lblNewPinLabel.Name = "lblNewPinLabel";
-            this.lblNewPinLabel.Size = new System.Drawing.Size(55, 16);
-            this.lblNewPinLabel.Text = "New PIN:";
-            this.lblNewPinLabel.Visible = false;
-
+            // 
+            lblNewPinLabel.AutoSize = true;
+            lblNewPinLabel.Location = new Point(20, 219);
+            lblNewPinLabel.Name = "lblNewPinLabel";
+            lblNewPinLabel.Size = new Size(56, 15);
+            lblNewPinLabel.TabIndex = 12;
+            lblNewPinLabel.Text = "New PIN:";
+            lblNewPinLabel.Visible = false;
+            // 
             // bottomPanel
-            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Height = 40;
-            this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Controls.Add(this.lblSoftwareId);
-            this.bottomPanel.Controls.Add(this.btnExit);
-
+            // 
+            bottomPanel.Controls.Add(lblSoftwareId);
+            bottomPanel.Controls.Add(btnExit);
+            bottomPanel.Dock = DockStyle.Bottom;
+            bottomPanel.Location = new Point(0, 357);
+            bottomPanel.Name = "bottomPanel";
+            bottomPanel.Size = new Size(1034, 40);
+            bottomPanel.TabIndex = 16;
+            // 
             // btnExit
-            this.btnExit.Location = new System.Drawing.Point(550, 7);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(100, 25);
-            this.btnExit.Text = "Exit";
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-
-            // Controls hozzáadása
-            this.Controls.Add(this.txtPinBox);
-            this.Controls.Add(this.btnLogin);
-            this.Controls.Add(this.btnRefreshPeers);
-            this.Controls.Add(this.peerListBox);
-            this.Controls.Add(this.chatRichTextBox);
-            this.Controls.Add(this.txtNewPinBox);
-            this.Controls.Add(this.txtUserName);
-            this.Controls.Add(this.btnSendMessage);
-            this.Controls.Add(this.btnSaveSettings);
-            this.Controls.Add(this.txtMessageBox);
-            this.Controls.Add(this.lblUserNameLabel);
-            this.Controls.Add(this.lblNewPinLabel);
-            this.Controls.Add(this.bottomPanel);
-
-            this.ClientSize = new System.Drawing.Size(670, 380);
-            this.Name = "Form1";
-            this.Text = "PNChat";
-
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            // 
+            btnExit.Location = new Point(863, 10);
+            btnExit.Name = "btnExit";
+            btnExit.Size = new Size(90, 20);
+            btnExit.TabIndex = 1;
+            btnExit.Text = "Exit";
+            btnExit.UseVisualStyleBackColor = true;
+            btnExit.Click += btnExit_Click;
+            // 
+            // Form1
+            // 
+            ClientSize = new Size(1034, 397);
+            Controls.Add(txtPinBox);
+            Controls.Add(btnLogin);
+            Controls.Add(btnRefreshPeers);
+            Controls.Add(peerListBox);
+            Controls.Add(activeWindowsListBox);
+            Controls.Add(chatRichTextBox);
+            Controls.Add(txtNewPinBox);
+            Controls.Add(txtUserName);
+            Controls.Add(btnSendMessage);
+            Controls.Add(btnSaveSettings);
+            Controls.Add(txtMessageBox);
+            Controls.Add(lblUserNameLabel);
+            Controls.Add(lblNewPinLabel);
+            Controls.Add(lblPeers);
+            Controls.Add(lblActiveWindows);
+            Controls.Add(lblChat);
+            Controls.Add(bottomPanel);
+            Name = "Form1";
+            Text = "PNChat";
+            bottomPanel.ResumeLayout(false);
+            bottomPanel.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
     }
 }
