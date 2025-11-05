@@ -31,5 +31,3 @@ Real-time status update: Sends a signal on the network when a peer leaves, so th
 Store settings in a file: Securely store PIN, ID and username in a local file, which is automatically loaded after restart.
 
 User interactions: Send text messages immediately, sound notification of incoming messages, manage login status.
-
-Easy-to-use interface: Lists of peers and chat messages, settings fields for changing PIN and name, and sending individual messages.
