@@ -3,8 +3,6 @@ Update: v0.7
 
 The update includes the peer-to-peer chat client sending and displaying the title of the OS's active window for each peer on the network. This title is automatically queried using the Windows API, then transmitted as part of peer discovery messages, and displayed in a separate list (the active windows list) for each client.
 
-<img width="841" height="412" alt="image" src="https://github.com/user-attachments/assets/6dc3b1db-b92f-468b-8484-9bf39dbdb6b0" />
-
 ------------------------------------
 
 Update: v0.6
